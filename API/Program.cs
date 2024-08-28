@@ -24,6 +24,26 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+/*Verificacion de migracines pendientes al iniciar*/
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+    try
+    {
+        var context = services.GetRequiredService<TiendaContext>();
+        await context.Database.MigrateAsync();
+        /*Seed de información inicial*/
+        await TiendaContextSeed.SeedAsync(context, loggerFactory);
+    }
+    catch (Exception ex)
+    {
+        var logger = loggerFactory.CreateLogger<Program>();
+        logger.LogError(ex, "Ocurrio un error durante la migracion");
+    }
+}
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
