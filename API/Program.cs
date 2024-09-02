@@ -1,9 +1,12 @@
+using API.Extensions;
 using Infraestructura.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+// Configure Allow CORS
+builder.Services.ConfigureCORS();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -43,6 +46,9 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "Ocurrio un error durante la migracion");
     }
 }
+
+// Allow CORS from Extension Static Method
+app.UseCors("CORSPolicy");
 
 app.UseHttpsRedirection();
 
